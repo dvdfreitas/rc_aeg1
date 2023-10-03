@@ -9,11 +9,11 @@
 ## Clonar o fork
 
 - Em Code copiar o endereco do repositório.
-- git clone https://github.com/YOUR-USERNAME/aeg_rc
-- cd aeg_rc
-
-
----
+- git clone https://github.com/YOUR-USERNAME/rc_aeg1
+- cd rc_aeg1
+- composer update
+- npm install
+- Criar uma nova *branch* com o nome do modelo que te foi atribuído (em vez de BRANCH-NAME).
 
 ```bash
 git branch BRANCH-NAME
@@ -22,14 +22,14 @@ git checkout BRANCH-NAME
 
 ---
 
-https://github.com/<your_username>/aeg_rc. You'll see a banner indicating that your branch is one commit ahead of dvdfreitas:main. Click Contribute and then Open a pull request.
+https://github.com/<your_username>/rc_aeg1. You'll see a banner indicating that your branch is one commit ahead of dvdfreitas:main. Click Contribute and then Open a pull request.
 
 
-GitHub will bring you to a page that shows the differences between your fork and the dvdfreitas/aeg_rc repository. Click Create pull request.
+GitHub will bring you to a page that shows the differences between your fork and the dvdfreitas/rc_aeg1 repository. Click Create pull request.
 
 
 - git remote -v
-- git remote add upstream https://github.com/ORIGINAL_OWNER/aeg_rc
+- git remote add upstream https://github.com/ORIGINAL_OWNER/rc_aeg1
 - git remote -v
 
 
