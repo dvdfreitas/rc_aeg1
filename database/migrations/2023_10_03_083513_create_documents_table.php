@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('subtitle')->nullable();
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->text('file');
+            $table->string('file');
             $table->string('image')->nullable();
             $table->string('type')->nullable();
             $table->year('year')->nullable();
