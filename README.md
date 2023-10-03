@@ -8,13 +8,14 @@
 
 ## Clonar o fork
 
-- Em Code copiar o endereco do repositório.
-- git clone https://github.com/YOUR-USERNAME/rc_aeg1
+- Na pasta onde quer instalar o projeto executar:
+``` bash
+git clone https://github.com/YOUR-USERNAME/rc_aeg1
+```
 - cd rc_aeg1
-- composer update
-- npm install
-- Criar uma nova *branch* com o nome do modelo que te foi atribuído (em vez de BRANCH-NAME).
-
+- Executar ```composer update```
+- Executar ```npm install```
+- Criar uma nova *branch* com o nome do modelo que te foi atribuído (em vez de BRANCH-NAME):
 ```bash
 git branch BRANCH-NAME
 git checkout BRANCH-NAME
