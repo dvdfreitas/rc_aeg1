@@ -26,24 +26,62 @@ class ImportCSV extends Command
      */
     public function handle()
     {
-        $this->info("Hello World! " . $this->argument('file'));
+        $filename = $this->argument('file');
 
-        $row = 1;
-        if (($handle = fopen($this->argument('file'), "r")) !== FALSE) {
-        while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
-                $num = count($data);
-                $this->info($num . " fields in line " . $row);
-                $row++;
-                for ($c=0; $c < $num; $c++) {
-                    $this->info($data[$c]);
-                }
-                DB::table('projects')->insert([
-                    'name' => $data[0],
-                    'slug' => $data[1]
-                    ]
-                );
+        $file = fopen($filename, "r");
+        
+        $header_csv = fgets($file);
+        $header = str_getcsv($header_csv, ",");     
+        
+        $validHeader = $this->validateHeader($header);
+
+        while(($line_csv = fgets($file)) !== false) {
+            $line = str_getcsv($line_csv, ";");
+            // $csv_id = $line[0];
+            // $this->info($csv_id);
+        }
+        
+        fclose($file);
+
+        return Command::SUCCESS;
+    }
+
+    public function verifyExistence($mandatory, $header) {
+        $result = true;
+        print_r($header);
+        foreach ($mandatory as $field) {
+            if (!in_array($field, $header)) {
+                $result = false;
+                $this->info($field . " não está no vector");
             }
         }
-        fclose($handle);
+        return $result;
     }
+
+    public function validateHeader($header)
+    {        
+        
+        $validHeader = true;
+        if ($header[0] == "projects") {
+            $validHeader = $this->verifyExistence(["slug", "name", "description"], $header);
+        }
+
+        if ($validHeader)
+            dd("Está válido"); 
+        else
+            dd("Inválido");
+        
+
+        // $line = $this->line($header);
+
+        // foreach ($header as $key => $column) {                
+        //     $this->info($line[$key]);
+        //     $record[$header[$key]] = $line[$key];
+        //     if ($record[$header[$key]] == "")
+        //         $record[$header[$key]] = null;
+        // }   
+        
+        return true;
+    }    
+
 }
