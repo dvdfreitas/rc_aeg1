@@ -2,9 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Models\SchoolClass;
+use App\Models\SchoolClassStudent;
+use App\Models\Student;
+use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use PhpParser\Node\Expr\Cast\Bool_;
 
 class ImportCSV extends Command
 {
@@ -13,10 +16,23 @@ class ImportCSV extends Command
      */
     public $validation = [
         'projects' => [
-            'mandatory' => ['slug', 'name']
+            'mandatory' => ['name', 'slug'],
+            'optional' => ['image'],
         ],
         'teachers' => [
-            'mandatory' => ['name']
+            'mandatory' => ['name', 'email']
+        ],
+        'school_classes' => [
+            'mandatory' => ['name', 'year', 'class_year'],
+        ],
+        'school_class_teacher' => [
+            'mandatory' => ['year', 'name', 'email'],
+        ],
+        'subjects' => [
+            'mandatory' => ['name'],
+        ],
+        'students' => [
+            'mandatory' => ['id', 'name'],
         ],
     ];
 
@@ -26,7 +42,7 @@ class ImportCSV extends Command
      *
      * @var string
      */
-    protected $signature = 'app:importCSV {file}';
+    protected $signature = 'importCSV {file} {--model=}';
 
     /**
      * The console command description.
@@ -40,24 +56,164 @@ class ImportCSV extends Command
      */
     public function handle()
     {
-        $filename = $this->argument('file');
-
+        $filename = $this->argument('file');                
         $file = fopen($filename, "r");
-        
-        $header_csv = fgets($file);
-        $header = str_getcsv($header_csv, ",");     
-        
-        $validHeader = $this->validateHeader($header);
 
-        // while(($line_csv = fgets($file)) !== false) {
-        //     $line = str_getcsv($line_csv, ";");
-        //     // $csv_id = $line[0];
-        //     // $this->info($csv_id);
-        // }
+        if ($this->option('model'))
+            $model = $this->option('model');
+        else
+            $model = pathinfo($filename, PATHINFO_FILENAME);
+            
+        $header_csv = fgets($file);
+        $header = str_getcsv($header_csv, ";");     
+        
+        if (array_key_exists($model, $this->validation)) {
+            $validHeader = $this->validateHeader($model, $header);
+            if ($validHeader) {
+                $this->info("Header is valid");                
+            }
+            else {
+                $this->error("Header is not valid");
+                return Command::FAILURE;
+            }            
+            $this->processFile($file, $model, $header);
+        }
+        else
+            return Command::FAILURE;        
         
         fclose($file);
 
+
         return Command::SUCCESS;
+    }
+
+    public function processFile($file, $model, $header) {
+        while(($line_csv = fgets($file)) !== false)  {
+            
+            $record = [];
+
+            $line = str_getcsv($line_csv, ";");
+            
+            foreach ($header as $key => $column) {         
+                $record[$header[$key]] = $line[$key];
+                if ($record[$header[$key]] == "")
+                    $record[$header[$key]] = null;
+            }
+            
+            if ($model == "teachers")
+                $this->insertTeacher($record);
+            elseif ($model == "school_classes")
+                $this->insertSchoolClass($record);
+            elseif ($model == "school_class_teacher") 
+                $this->insertSchoolClassTeacher($record);
+            elseif ($model == "students")
+                $this->insertStudent($record);
+            else {
+                if (!DB::table($model)->insertOrIgnore($record))
+                    $this->info("Insert in $model failed");
+            }
+                
+        }    
+    }
+    
+    function insertStudent($record) {
+        
+        $student_id = $record['id'];
+        $record['email'] = "a" . $student_id . "@aeg1.pt";
+                
+        $student_inserted = DB::table('students')->insertOrIgnore([
+            'id' => $student_id,
+            'name' => $record['name'],
+            'email' => $record['email']
+        ]);
+
+        if (!$student_inserted)
+            $this->info("Student " . $record['name'] . " already exists.");
+
+        if (array_key_exists("school_class_name", $record) && array_key_exists("year", $record)) {
+                        
+            $school_class = SchoolClass::where('name', $record['school_class_name'])->where('year', $record['year'])->get();
+            if ($school_class->isEmpty()) {
+                $this->error($record['school_class_name'] . " (" . $record['year'] . ") doesn't exist.");
+                return;
+            }
+
+            $student = Student::find($student_id);
+         
+            if (!$student_inserted) {
+                $old_school_class = $student->schoolClass($record['year']);                
+                
+                if ($old_school_class != null) {               
+                    DB::table('school_class_student')->where('student_id', $student_id)->where('school_class_id', $old_school_class->id)->delete();
+                    $this->info("Student " . $record['name'] . " removed from " . $old_school_class->name . " (" . $old_school_class->year . ")");
+                }
+            }
+        
+            DB::table('school_class_student')->insertGetId([
+                'school_class_id' => $school_class->first()->id,
+                'student_id' => $student_id
+            ]);        
+        }        
+    }
+
+    function insertSchoolClassTeacher($record) { 
+        $user = User::where('email', $record['email'])->get();        
+        if ($user->isEmpty()) 
+            $this->error($record['email'] . " is not an user.");
+        else {            
+            $teacher = DB::table('teachers')->where('user_id', $user->first()->id)->get();
+            if ($teacher->isEmpty())
+                $this->error($record['email'] . " is not a teacher.");
+            else {                
+                $school_class = SchoolClass::where('name', $record['name'])->where('year', $record['year'])->get();
+                if ($school_class->isEmpty()) {
+                    $this->error($record['name'] . " (" . $record['year'] . ") doesn't exist.");
+                } else {
+                    $school_class_id = $school_class->first()->id;
+                    $teacher_id = $user->first()->id;
+                    $school_class_teacher = DB::table('school_class_teacher')->where('school_class_id', $school_class_id)->where('teacher_id', $teacher_id)->get();
+                    if ($school_class_teacher->isEmpty())
+                        DB::table('school_class_teacher')->insert([
+                            'school_class_id' => $school_class_id,
+                            'teacher_id' => $teacher_id
+                        ]);
+                    else {
+                        $this->error($record['name'] . " (" . $record['year'] . ") already has " . $record['email'] . " as a teacher.");
+                    }
+                }
+            }
+        }
+    }
+
+    function insertTeacher($record) {        
+        $user = User::where('email', $record['email'])->get();
+        $user_id = null;
+        if ($user->isEmpty()) 
+            $user_id = DB::table('users')->insertGetId([
+                'name' => $record['name'],
+                'email' => $record['email'],
+            ]);
+        else {            
+            $user_id = $user->first()->id;            
+        }
+
+        $teacher = DB::table('teachers')->where('user_id', $user_id)->get();
+
+        if ($teacher->isEmpty())
+            DB::table('teachers')->insert([
+                'user_id' => $user_id,
+                'code' => $record['code']
+            ]);
+    }
+
+    function insertSchoolClass($record) {
+        $school_class = DB::table('school_classes')->where('name', $record['name'])->where('year', $record['year'])->where('class_year', $record['class_year'])->get();
+        if ($school_class->isEmpty())
+            DB::table('school_classes')->insert([
+                'name' => $record['name'],
+                'year' => $record['year'],
+                'class_year' => $record['class_year'],                
+            ]);
     }
 
     /**
@@ -68,7 +224,7 @@ class ImportCSV extends Command
         foreach ($mandatory as $field) {
             if (!in_array($field, $header)) {
                 $result = false;
-                $this->info($field . " não está no vector");
+                $this->error($field . " is a required field and is missing in the CSV file.");
             }
         }
         return $result;
@@ -83,30 +239,12 @@ class ImportCSV extends Command
     }
 
 
-    public function validateHeader($header)
+    public function validateHeader($table, $header)
     {                
         $validHeader = true;
-
-        // Check first if $header[0] is in validation array and not an empty key
-        if (array_key_exists($header[0], $this->validation))
-            $this->validTable($header[0]);
-        else
-            dd("Table " . $header[0] . " doesn't exist.");
-        $mandatory = $this->validation[$header[0]]['mandatory'];
-        
+        $mandatory = $this->validation[$table]['mandatory'];
         $validHeader = $this->verifyExistence($mandatory, $header);
-        dd($validHeader);
-        
-        // $line = $this->line($header);
-
-        // foreach ($header as $key => $column) {                
-        //     $this->info($line[$key]);
-        //     $record[$header[$key]] = $line[$key];
-        //     if ($record[$header[$key]] == "")
-        //         $record[$header[$key]] = null;
-        // }   
-        
-        return true;
+                             
+        return $validHeader;
     }    
-
 }

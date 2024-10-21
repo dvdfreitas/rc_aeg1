@@ -1,5 +1,69 @@
-rc,name,slug
-dvd,David Freitas,
-abc,Abecedário,
-def,Altamente,
-ghi,Sai dái,
+name;short_name;slug;image;web;description
+10afios;;10afios;;;
+10 Minutos a ler;;10-minutos-a-ler;;;
+BE_CRE;;becre;;;
+Blog “1.º CEB”;;blog_1ceb;;;
+Cidadania e Desenvolvimento;;ced;ced.png;;
+“Conhecer Saramago: o homem e a obra”;;conhecer-saramago;;;
+“Conta-me uma história…Ler com os amigos ainda é melhor”;;conta-me-uma-historia;;;
+Crescer com a Música;;crescer-com-a-musica;;;
+Digitrain Project;;digitrain;;;
+Espaço +;;espaco+;;;
+Gerar Saúde;;gerar-saude;;;
+Já sei ler;;ja-sei-ler;;;
+Jardim Pop-up em Jovim;;jardim-pop-up;;;
+Junior Achievement;;junior-achievement;junior_achievement.png;;
+Labi9;;labi9;labi9.png;;
+Lab4Kids;;lab4kids;;;
+Laboratório Aberto;;laboratorio-aberto;;;
+Laboratório das Artes;;laboratorio-das-artes;;;
+Ler de A a Z, Ler Melhor, Saber Mais;;ler-a-z;;;
+Leitura Intergeracional;;leitura-intergeracional;;;
+Leituras em vai e vem;;leituras-em-vai-e-vem;;;
+P-TIC;;ptic;ptic.png;;
+Página web do AEG1;;web;;;
+Plano de Inovação;;plano-de-inovacao;;;
+Plano Nacional de Leitura;;plano-nacional-de-leitura;;;
+Plano Nacional de Cinema;;plano-nacional-de-cinema;pnc.png;;
+Plano Nacional das Artes;;plano-nacional-das-artes;;;
+Rede Escolas da UNESCO;;unesco;;;
+Redes Sociais do AEG1;;redes_sociais;;;
+ShapING;;shaping;;;
+SeguraNet;;seguranet;;;
+Visitações;;visitacoes;;;
+Apps for Good;;apps-for-good;apps_for_good.png;;
+Codeweek;;codeweek;codeweek.png;;
+Eco-escolas;;eco-escolas;eco_escolas.png;;
+Erasmus+;;erasmus+;erasmus_mais.png;;
+eTwinning;;eTwinning;e_twinning.png;;
+Hour of Code;;hour-of-code;hour_of_code.png;;
+Parlamento dos Jovens;;parlamento-dos-jovens;;;
+Atelier de Artes Visuais;;atelier-de-artes-visuais;;;
+Clube de Cinema;;clube-de-cinema;;;
+Desporto Escolar;;desporto-escolar;desporto_escolar.png;;
+Clube Europeu;;clube-europeu;clube_europeu.png;;
+Jornal Escolar;;jornal-escolar;;;
+Gira Volei;;gira-volei;;;
+Clube de Música;;clube-de-musica;;;
+Parques Serras do Porto;;parques-serras-do-porto;;;
+Clube de Robótica;;clube-de-robotica;;;
+Clube de Teatro;;clube-teatro;clube_teatro.png;;
+Ciência Viva;;ciencia-viva;;;
+Clube de Cerâmica;;clube-de-ceramica;;;
+Torneio de Leitura 3.º CEB;;torneio-de-leitura;;;
+Canguru Matemático;;canguru-matematico;;;
+Concurso Nacional de Leitura;;concurso-nacional-de-leitura;;;
+Jogo do 24;;jogo-do-24;;;
+Mostra o que sabes;;mostra-o-que-sabes;;;
+Olimpíadas da Economia;;olimpiadas-da-economia;;;
+Olimpíadas da Língua Portuguesa;;olimpiadas-da-lingua-portuguesa;;;
+Olimpíadas da Química +;;olimpiadas-da-quimica;;;
+Olimpíadas da Geologia;;olimpiadas-da-geologia;;;
+Olimpíadas Nacionais da Matemática;;olimpiadas-nacionais-da-matematica;;;
+Olimpíadas de Geografia;;olimpiadas-de-geografia;;;
+Ortografíadas;;ortografiadas;;;
+Prémio “Alfredo da Silva”;;alfredo-da-silva;alfredo_da_silva.png;;
+Sitestar;;sitestar;sitestar.png;;
+SuperTmatic-Matemática;;supertmatic-matematica;;;
+SuperTmatic-Inglês;;supertmatic-ingles;;;
+Todos Contam;;todos-contam;todos_contam.png;;

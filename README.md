@@ -158,3 +158,11 @@ public function run(): void
 ```php
 php artisan db:seed
 ```
+
+## Criar um comando 
+
+```bash
+php artisan make:command SendEmails
+```
+
+
